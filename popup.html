@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auto Translator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 380px;
+      min-height: 500px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      margin: 8px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 12px;
+      margin: 0 auto 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: white;
+      font-weight: bold;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #718096;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: #4a5568;
+      margin-bottom: 8px;
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: white;
+      font-size: 14px;
+      color: #2d3748;
+      transition: all 0.3s ease;
+      appearance: none;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    select:hover {
+      border-color: #cbd5e0;
+    }
+
+    .select-arrow {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: #a0aec0;
+    }
+
+    .checkbox-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px;
+      background: #f7fafc;
+      border-radius: 12px;
+      border: 2px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .checkbox-wrapper:hover {
+      border-color: #cbd5e0;
+      background: #edf2f7;
+    }
+
+    .checkbox-wrapper input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: #667eea;
+      cursor: pointer;
+    }
+
+    .checkbox-label {
+      font-size: 14px;
+      color: #4a5568;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .save-btn {
+      width: 100%;
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .save-btn:active {
+      transform: translateY(0);
+    }
+
+    .save-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      margin-top: 16px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .status.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .status.success {
+      background: #c6f6d5;
+      color: #22543d;
+      border: 1px solid #9ae6b4;
+    }
+
+    .status.error {
+      background: #fed7d7;
+      color: #742a2a;
+      border: 1px solid #feb2b2;
+    }
+
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #a0aec0;
+    }
+
+    .shortcut-hint {
+      background: #edf2f7;
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 16px;
+      font-size: 13px;
+      color: #4a5568;
+      text-align: center;
+    }
+
+    .shortcut-key {
+      background: #667eea;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      margin: 0 2px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 400px) {
+      body {
+        width: 320px;
+      }
+      
+      .container {
+        margin: 4px;
+        padding: 16px;
+      }
+      
+      .title {
+        font-size: 18px;
+      }
+      
+      .subtitle {
+        font-size: 12px;
+      }
+      
+      select, button {
+        font-size: 14px;
+        padding: 10px 12px;
+      }
+    }
+
+    @media (max-width: 350px) {
+      body {
+        width: 300px;
+      }
+      
+      .logo {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+      }
+      
+      .title {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">🌐</div>
+      <div class="title">Auto Translator</div>
+      <div class="subtitle">Dịch văn bản thông minh</div>
+    </div>
+
+    <div class="form-group">
+      <label class="label" for="api-select">Chọn API</label>
+      <div class="select-wrapper">
+        <select id="api-select">
+          <option value="gemini">🤖 Gemini AI</option>
+          <option value="openai">🧠 OpenAI GPT</option>
+        </select>
+        <div class="select-arrow">▼</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="label" for="target-lang">Ngôn ngữ đích</label>
+      <div class="select-wrapper">
+        <select id="target-lang">
+          <option value="en">🇺🇸 English</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="es">🇪🇸 Español</option>
+          <option value="de">🇩🇪 Deutsch</option>
+          <option value="zh">🇨🇳 中文</option>
+          <option value="ja">🇯🇵 日本語</option>
+          <option value="ko">🇰🇷 한국어</option>
+        </select>
+        <div class="select-arrow">▼</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="checkbox-wrapper">
+        <input type="checkbox" id="auto-translate">
+        <label class="checkbox-label" for="auto-translate">
+          ✨ Tự động dịch khi gõ (khi blur khỏi input)
+        </label>
+      </div>
+    </div>
+
+    <button id="save-btn" class="save-btn">
+      💾 Lưu Cấu hình
+    </button>
+
+    <div id="status" class="status"></div>
+
+    <div class="shortcut-hint">
+      <div>Phím tắt: <span class="shortcut-key">Ctrl</span> + <span class="shortcut-key">Shift</span> + <span class="shortcut-key">Y</span></div>
+      <div style="margin-top: 4px; font-size: 11px;">Bôi đen văn bản và nhấn phím tắt để dịch</div>
+    </div>
+
+    <div class="footer">
+      <div>© 2024 Hoài Nghĩa - Cafe Nhớ</div>
+      <div style="margin-top: 4px; font-size: 10px; opacity: 0.8;">
+        <a href="https://t.me/hoainghia22" target="_blank" style="color: #667eea; text-decoration: none;">📱 Telegram</a> • 
+        <a href="https://github.com/hoainghia22" target="_blank" style="color: #667eea; text-decoration: none;">🐙 GitHub</a> • 
+        <a href="https://cafenho.net" target="_blank" style="color: #667eea; text-decoration: none;">🌐 Website</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

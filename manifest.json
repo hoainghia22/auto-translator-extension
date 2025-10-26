@@ -1,0 +1,41 @@
+{
+  "manifest_version": 3,
+  "name": "Auto Translator Extension",
+  "version": "1.0",
+  "description": "Dịch văn bản được bôi đen thành ngôn ngữ đích sử dụng API Gemini hoặc OpenAI khi nhấn phím tắt.",
+  "author": "Hoài Nghĩa - Cafe Nhớ",
+  "homepage_url": "https://github.com/hoainghia22/auto-translator-extension",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.openai.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Auto Translator"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "options_page": "options.html",
+  "commands": {
+    "translate-selection": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y"
+      },
+      "description": "Dịch văn bản được bôi đen"
+    }
+  }
+}

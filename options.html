@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tùy chọn Extension</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      color: white;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .subtitle {
+      font-size: 16px;
+      opacity: 0.9;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .label {
+      display: block;
+      font-size: 16px;
+      font-weight: 500;
+      color: #4a5568;
+      margin-bottom: 12px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 16px 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      background: white;
+      font-size: 16px;
+      color: #2d3748;
+      transition: all 0.3s ease;
+      font-family: 'Courier New', monospace;
+    }
+
+    input[type="password"]:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    input[type="password"]:hover {
+      border-color: #cbd5e0;
+    }
+
+    .input-icon {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #a0aec0;
+      font-size: 18px;
+    }
+
+    .save-btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 16px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .save-btn:active {
+      transform: translateY(0);
+    }
+
+    .save-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      text-align: center;
+      transition: all 0.3s ease;
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    .status.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .status.success {
+      background: #c6f6d5;
+      color: #22543d;
+      border: 1px solid #9ae6b4;
+    }
+
+    .status.error {
+      background: #fed7d7;
+      color: #742a2a;
+      border: 1px solid #feb2b2;
+    }
+
+    .shortcuts-section {
+      background: #f7fafc;
+      border-radius: 12px;
+      padding: 24px;
+    }
+
+    .shortcuts-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: #2d3748;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .shortcuts-list {
+      list-style: none;
+      counter-reset: step-counter;
+    }
+
+    .shortcuts-list li {
+      counter-increment: step-counter;
+      margin-bottom: 16px;
+      padding-left: 40px;
+      position: relative;
+      font-size: 16px;
+      color: #4a5568;
+    }
+
+    .shortcuts-list li::before {
+      content: counter(step-counter);
+      position: absolute;
+      left: 0;
+      top: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .code-link {
+      background: #667eea;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-family: 'Courier New', monospace;
+      font-weight: 600;
+      display: inline-block;
+      margin: 8px 0;
+      transition: all 0.3s ease;
+    }
+
+    .code-link:hover {
+      background: #5a67d8;
+      transform: translateY(-1px);
+    }
+
+    .info-box {
+      background: #e6fffa;
+      border: 1px solid #81e6d9;
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .info-title {
+      font-weight: 600;
+      color: #234e52;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-text {
+      color: #2c7a7b;
+      font-size: 14px;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .card:nth-child(2) {
+      animation-delay: 0.1s;
+    }
+
+    .card:nth-child(3) {
+      animation-delay: 0.2s;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 16px;
+      }
+      
+      .title {
+        font-size: 28px;
+      }
+      
+      .card {
+        padding: 24px;
+        margin-bottom: 20px;
+      }
+      
+      .card-title {
+        font-size: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 16px 12px;
+      }
+      
+      .header {
+        margin-bottom: 30px;
+      }
+      
+      .logo {
+        width: 60px;
+        height: 60px;
+        font-size: 30px;
+      }
+      
+      .title {
+        font-size: 24px;
+      }
+      
+      .subtitle {
+        font-size: 14px;
+      }
+      
+      .card {
+        padding: 20px;
+      }
+      
+      .card-title {
+        font-size: 18px;
+      }
+      
+      input[type="password"] {
+        padding: 14px 16px;
+        font-size: 14px;
+      }
+      
+      .save-btn {
+        padding: 14px 24px;
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">⚙️</div>
+      <div class="title">Cài đặt Extension</div>
+      <div class="subtitle">Cấu hình API keys và tùy chỉnh phím tắt</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        🔑 Cấu hình API Keys
+      </div>
+      
+      <div class="form-group">
+        <label class="label" for="gemini-key">Gemini API Key</label>
+        <div class="input-wrapper">
+          <input type="password" id="gemini-key" placeholder="Nhập Gemini API key của bạn">
+          <div class="input-icon">🔒</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="label" for="openai-key">OpenAI API Key</label>
+        <div class="input-wrapper">
+          <input type="password" id="openai-key" placeholder="Nhập OpenAI API key của bạn">
+          <div class="input-icon">🔒</div>
+        </div>
+      </div>
+
+      <button id="save-options" class="save-btn">
+        💾 Lưu API Keys
+      </button>
+
+      <div id="options-status" class="status"></div>
+
+      <div class="info-box">
+        <div class="info-title">
+          ℹ️ Thông tin quan trọng
+        </div>
+        <div class="info-text">
+          API keys sẽ được mã hóa và lưu trữ an toàn trên thiết bị của bạn. 
+          Chúng tôi không thu thập hoặc lưu trữ thông tin này trên server.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="shortcuts-section">
+        <div class="shortcuts-title">
+          ⌨️ Tùy chỉnh Phím tắt
+        </div>
+        <p style="margin-bottom: 20px; color: #4a5568;">
+          Để thay đổi phím tắt dịch thủ công, hãy làm theo các bước sau:
+        </p>
+        <ol class="shortcuts-list">
+          <li>Mở trang quản lý phím tắt của Chrome</li>
+          <li>Tìm extension "Auto Translator Extension"</li>
+          <li>Thay đổi phím tắt cho "translate-selection"</li>
+        </ol>
+        
+        <a href="chrome://extensions/shortcuts" class="code-link" target="_blank">
+          🔗 Mở trang phím tắt
+        </a>
+
+        <div class="info-box">
+          <div class="info-title">
+            💡 Mẹo sử dụng
+          </div>
+          <div class="info-text">
+            • Bôi đen văn bản cần dịch<br>
+            • Nhấn phím tắt để dịch ngay lập tức<br>
+            • Có thể dịch trên bất kỳ trang web nào
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div style="text-align: center; padding: 20px;">
+        <div style="font-size: 18px; font-weight: 600; color: #2d3748; margin-bottom: 12px;">
+          © 2024 Hoài Nghĩa - Cafe Nhớ
+        </div>
+        <div style="font-size: 14px; color: #718096; margin-bottom: 16px;">
+          Auto Translator Extension - Dịch văn bản thông minh
+        </div>
+        <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
+          <a href="https://t.me/hoainghia22" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">
+            📱 Telegram
+          </a>
+          <a href="https://github.com/hoainghia22" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">
+            🐙 GitHub
+          </a>
+          <a href="https://cafenho.net" target="_blank" style="color: #667eea; text-decoration: none; font-weight: 500;">
+            🌐 Website
+          </a>
+        </div>
+        <div style="margin-top: 16px; font-size: 12px; color: #a0aec0;">
+          Được phân phối dưới giấy phép MIT
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

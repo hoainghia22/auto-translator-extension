@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Gemini API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .debug-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #f9f9f9;
+        }
+        .api-key-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .test-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-btn:hover {
+            background: #5a67d8;
+        }
+        .test-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        .console-output {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Debug Gemini API</h1>
+    
+    <div class="debug-section">
+        <h3>🔑 API Key Test</h3>
+        <p>Nhập Gemini API key của bạn để test:</p>
+        <input type="password" id="api-key" class="api-key-input" placeholder="AIzaSy..." value="AIzaSyDUlr-KcDozK6ceyDTLKtYXuJyJ8mWwiFk">
+        <br>
+        <button id="test-key" class="test-btn">🧪 Test API Key</button>
+        <button id="list-models" class="test-btn">📋 List Available Models</button>
+        <button id="test-translate" class="test-btn">🌐 Test Translation</button>
+        <button id="clear-console" class="test-btn">🗑️ Clear Console</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>📊 Console Output</h3>
+        <div id="console-output" class="console-output"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>📋 Available Models</h3>
+        <div id="models-list"></div>
+    </div>
+
+    <div class="debug-section">
+        <h3>🌐 Translation Test</h3>
+        <p>Test dịch thuật với văn bản mẫu:</p>
+        <textarea id="test-text" placeholder="Nhập văn bản cần dịch..." style="width: 100%; height: 100px; margin: 10px 0;">Xin chào, tôi là một extension dịch thuật thông minh.</textarea>
+        <br>
+        <select id="target-lang" style="padding: 5px; margin: 5px;">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="de">Deutsch</option>
+            <option value="zh">中文</option>
+        </select>
+        <div id="translation-result"></div>
+    </div>
+
+    <script>
+        // Console capture
+        const originalLog = console.log;
+        const originalError = console.error;
+        const consoleOutput = document.getElementById('console-output');
+        
+        function addToConsole(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#ff6b6b' : '#0f0';
+            consoleOutput.innerHTML += `<div style="color: ${color}">[${timestamp}] ${message}</div>`;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole(args.join(' '), 'log');
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole(args.join(' '), 'error');
+        };
+
+        // Test functions
+        async function testApiKey() {
+            const apiKey = document.getElementById('api-key').value.trim();
+            const resultDiv = document.getElementById('result');
+            
+            if (!apiKey) {
+                resultDiv.innerHTML = '<div class="error">❌ Vui lòng nhập API key</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info">⏳ Đang test API key...</div>';
+            
+            try {
+                console.log('🔍 Testing API key:', apiKey.substring(0, 10) + '...');
+                
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models', {
+                    method: 'GET',
+                    headers: {
+                        'x-goog-api-key': apiKey
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ API key hợp lệ! Available models:', data);
+                    resultDiv.innerHTML = '<div class="success">✅ API key hợp lệ!</div>';
+                } else {
+                    const errorData = await response.text();
+                    console.error('❌ API key lỗi:', response.status, errorData);
+                    resultDiv.innerHTML = `<div class="error">❌ API key lỗi: ${response.status} - ${errorData}</div>`;
+                }
+            } catch (error) {
+                console.error('❌ Lỗi test API:', error);
+                resultDiv.innerHTML = `<div class="error">❌ Lỗi test API: ${error.message}</div>`;
+            }
+        }
+
+        async function listModels() {
+            const apiKey = document.getElementById('api-key').value.trim();
+            const modelsDiv = document.getElementById('models-list');
+            
+            if (!apiKey) {
+                modelsDiv.innerHTML = '<div class="error">❌ Vui lòng nhập API key</div>';
+                return;
+            }
+            
+            modelsDiv.innerHTML = '<div class="info">⏳ Đang lấy danh sách models...</div>';
+            
+            try {
+                console.log('📋 Fetching available models...');
+                const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models', {
+                    method: 'GET',
+                    headers: {
+                        'x-goog-api-key': apiKey
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Models data:', data);
+                    
+                    const models = data.models || [];
+                    const generateContentModels = models.filter(model => 
+                        model.supportedGenerationMethods?.includes('generateContent')
+                    );
+                    
+                    let html = '<div class="success">✅ Danh sách models:</div><ul>';
+                    
+                    generateContentModels.forEach(model => {
+                        const modelName = model.name.replace('models/', '');
+                        html += `<li><strong>${modelName}</strong> - ${model.displayName || 'No display name'}</li>`;
+                    });
+                    
+                    html += '</ul>';
+                    
+                    if (generateContentModels.length === 0) {
+                        html = '<div class="warning">⚠️ Không có model nào hỗ trợ generateContent</div>';
+                    }
+                    
+                    modelsDiv.innerHTML = html;
+                } else {
+                    const errorData = await response.text();
+                    console.error('❌ Lỗi lấy models:', response.status, errorData);
+                    modelsDiv.innerHTML = `<div class="error">❌ Lỗi lấy models: ${response.status} - ${errorData}</div>`;
+                }
+            } catch (error) {
+                console.error('❌ Lỗi:', error);
+                modelsDiv.innerHTML = `<div class="error">❌ Lỗi: ${error.message}</div>`;
+            }
+        }
+
+        async function testTranslation() {
+            const apiKey = document.getElementById('api-key').value.trim();
+            const text = document.getElementById('test-text').value.trim();
+            const targetLang = document.getElementById('target-lang').value;
+            const resultDiv = document.getElementById('translation-result');
+            
+            if (!apiKey || !text) {
+                resultDiv.innerHTML = '<div class="error">❌ Vui lòng nhập API key và văn bản</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<div class="info">⏳ Đang dịch...</div>';
+            
+            try {
+                console.log('🌐 Testing translation...');
+                
+                // First get available models
+                const modelsResponse = await fetch('https://generativelanguage.googleapis.com/v1beta/models', {
+                    method: 'GET',
+                    headers: {
+                        'x-goog-api-key': apiKey
+                    }
+                });
+                
+                if (!modelsResponse.ok) {
+                    throw new Error(`Cannot fetch models: ${modelsResponse.status}`);
+                }
+                
+                const modelsData = await modelsResponse.json();
+                const availableModels = modelsData.models
+                    ?.filter(model => model.supportedGenerationMethods?.includes('generateContent'))
+                    ?.map(model => model.name.replace('models/', ''))
+                    || [];
+                
+                console.log('🎯 Available models for translation:', availableModels);
+                
+                if (availableModels.length === 0) {
+                    throw new Error('Không có model nào hỗ trợ generateContent');
+                }
+                
+                // Try translation with first available model
+                const model = availableModels[0];
+                console.log(`🧪 Trying translation with model: ${model}`);
+                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': apiKey
+                    },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{
+                                text: `Translate the following text from Vietnamese to ${targetLang}. Only return the translated text: "${text}"`
+                            }]
+                        }],
+                        generationConfig: {
+                            temperature: 0.1,
+                            maxOutputTokens: 1000
+                        }
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('✅ Translation response:', data);
+                    
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) {
+                        const translatedText = data.candidates[0].content.parts[0].text.trim();
+                        resultDiv.innerHTML = `<div class="success">✅ Dịch thành công với model ${model}:<br><strong>${translatedText}</strong></div>`;
+                    } else {
+                        resultDiv.innerHTML = `<div class="error">❌ Lỗi format response: ${JSON.stringify(data)}</div>`;
+                    }
+                } else {
+                    const errorData = await response.text();
+                    console.error('❌ Translation error:', response.status, errorData);
+                    resultDiv.innerHTML = `<div class="error">❌ Lỗi dịch: ${response.status} - ${errorData}</div>`;
+                }
+            } catch (error) {
+                console.error('❌ Translation error:', error);
+                resultDiv.innerHTML = `<div class="error">❌ Lỗi dịch: ${error.message}</div>`;
+            }
+        }
+
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '';
+        }
+
+        // Event listeners
+        document.getElementById('test-key').addEventListener('click', testApiKey);
+        document.getElementById('list-models').addEventListener('click', listModels);
+        document.getElementById('test-translate').addEventListener('click', testTranslation);
+        document.getElementById('clear-console').addEventListener('click', clearConsole);
+
+        // Auto-test on page load
+        window.addEventListener('load', function() {
+            console.log('🔧 Debug page loaded');
+            console.log('📝 API key pre-filled:', document.getElementById('api-key').value.substring(0, 10) + '...');
+        });
+    </script>
+</body>
+</html>
