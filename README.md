@@ -64,7 +64,7 @@ Extension này được phân phối dưới giấy phép MIT. Xem file [LICENSE
 
 - **Tác giả**: Hoài Nghĩa - Cafe Nhớ
 - **Email**: hoainghia02@gmail.com
-- **Telegram**: [@hoainghia22](https://t.me/hoainghia22)
+- **Telegram**: [@hoainghia86](https://t.me/hoainghia86)
 - **GitHub**: [hoainghia](https://github.com/hoainghia22)
 - **Website**: [Cafe Nhớ](https://cafenho.net)
 

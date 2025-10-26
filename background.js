@@ -6,8 +6,8 @@
  * the extension and content scripts.
  * 
  * Author: Hoài Nghĩa - Cafe Nhớ
- * Email: hoainghia22@gmail.com
- * Telegram: @hoainghia22
+ * Email: hoainghia02@gmail.com
+ * Telegram: @hoainghia86
  * GitHub: https://github.com/hoainghia22
  * Website: https://cafenho.net
  * 

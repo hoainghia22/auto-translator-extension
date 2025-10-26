@@ -34,6 +34,21 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
+# Chrome Extension specific
+*.pem
+*.crx
+*.zip
+
+# API keys in any files
+*api*key*
+*secret*
+*password*
+*token*
+
+# Debug files with sensitive data
+debug-with-keys.html
+test-with-keys.html
+
 # Build files
 dist/
 build/

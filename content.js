@@ -7,8 +7,8 @@
  * automatic translation for input fields.
  * 
  * Author: Hoài Nghĩa - Cafe Nhớ
- * Email: hoainghia22@gmail.com
- * Telegram: @hoainghia22
+ * Email: hoainghia02@gmail.com
+ * Telegram: @hoainghia286
  * GitHub: https://github.com/hoainghia22
  * Website: https://cafenho.net
  * 
